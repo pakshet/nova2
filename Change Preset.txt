@@ -1,0 +1,113 @@
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+local player = Players.LocalPlayer
+
+local expSet = false
+
+---
+
+local RepEventFolder = ReplicatedStorage
+	:WaitForChild("\228\186\139\228\187\182")
+	:WaitForChild("\229\133\172\231\148\168")
+
+---
+
+--- local switchEqEvent = RepEventFolder
+	---:WaitForChild("\232\163\133\229\164\135")
+	---:WaitForChild("\229\136\135\230\141\162\232\163\133\229\164\135\231\187\132")
+	
+local switchRelicEvent = RepEventFolder
+	:WaitForChild("\233\129\151\231\137\169")
+	:WaitForChild("\229\136\135\230\141\162\232\163\133\229\164\135\231\187\132")
+
+local switchRuneEvent = RepEventFolder
+	:WaitForChild("\233\152\181\230\179\149")
+	:WaitForChild("\229\136\135\230\141\162\232\163\133\229\164\135\231\187\132")
+	
+local switchDecorEvent = RepEventFolder
+	:WaitForChild("\228\184\150\231\149\140\230\160\145")
+	:WaitForChild("\229\136\135\230\141\162\232\163\133\229\164\135\231\187\132")
+	
+local switchStatueEvent = RepEventFolder
+	:FindFirstChild("\229\137\145\233\155\149\229\131\143")
+	:FindFirstChild("\229\136\135\230\141\162\231\187\132")
+
+	
+local switchPetEvent = RepEventFolder
+	:WaitForChild("\229\174\160\231\137\169")
+	:WaitForChild("\232\163\133\229\164\135")
+
+---
+
+local playerGui = player:WaitForChild("PlayerGui")
+if playerGui:FindFirstChild("AutoSkillUI") then
+	playerGui.AutoSkillUI:Destroy()
+end
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "AutoSwitch"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Parent = playerGui
+
+local function createButton(text, xPos)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0, 90, 0, 30)
+	btn.Position = UDim2.new(0, xPos, 0, 437)
+	btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 10
+	btn.BorderSizePixel = 0
+	btn.Text = text
+	btn.Active = true
+	btn.AutoButtonColor = true
+	btn.ZIndex = 9999
+	btn.Parent = gui
+	return btn
+end
+
+---
+
+local expBtn = createButton("Exp Set - OFF", 157)
+local dtbBtn = createButton("DTB Set - OFF", 255)
+
+expBtn.MouseButton1Click:Connect(function()
+	
+	if not expSet then 
+		--- switchEqEvent:FireServer("1",1)
+		switchRelicEvent:FireServer("1",1)
+		task.wait(0.3)
+		switchRuneEvent:FireServer("1",1)
+		task.wait(0.3)
+		switchDecorEvent:FireServer("1",1)
+		task.wait(0.3)
+		switchStatueEvent:FireServer("4",1)
+		task.wait(0.3)
+		switchPetEvent:FireServer("252aa770-fa9e-428b-a1d8-f2b634e487e1",1) --- EXP Pet
+		expSet = true
+		expBtn.Text = "Exp Set - " .. (expSet and "ON" or "OFF")
+		tpBtn.Text = "DTB Set - " .. (not expSet and "ON" or "OFF")
+	end
+end)
+
+tpBtn.MouseButton1Click:Connect(function()
+	
+	if expSet then 
+		--- switchEqEvent:FireServer("1",1)
+		switchRelicEvent:FireServer("4",1)
+		task.wait(0.3)
+		switchRuneEvent:FireServer("4",1)
+		task.wait(0.3)
+		switchDecorEvent:FireServer("5",1)
+		task.wait(0.3)
+		switchStatueEvent:FireServer("2",1)
+		task.wait(0.3)
+		switchPetEvent:FireServer("6cf49d48-b5a2-47be-9b73-8d9804f0e4d8",1) --- DTB Pet
+		expSet = false
+		tpBtn.Text = "DTB Set - " .. (expSet and "ON" or "OFF")
+		expBtn.Text = "Exp Set - " .. (not expSet and "ON" or "OFF")
+	end
+end)
