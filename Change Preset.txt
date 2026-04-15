@@ -91,8 +91,8 @@ expBtn.MouseButton1Click:Connect(function()
 		task.wait(0.3)
 		switchPetEvent:FireServer("252aa770-fa9e-428b-a1d8-f2b634e487e1",1)
 		expSet = true
-		expBtn.Text = "Exp Set Equipped" .. (expSet and "ON" or "OFF")
-		dtbBtn.Text = "DTB Set" .. (not expSet and "ON" or "OFF")
+		expBtn.Text = "Exp Set Equipped"
+		dtbBtn.Text = "DTB Set"
 		busy = false
 	end
 end)
