@@ -1,0 +1,301 @@
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+--// REMOTES
+local RepEventFolder = ReplicatedStorage
+	:WaitForChild("\228\186\139\228\187\182")
+	:WaitForChild("\229\133\172\231\148\168")
+
+local switchEqEvent = RepEventFolder:WaitForChild("\232\163\133\229\164\135")
+	:WaitForChild("\229\136\135\230\141\162\232\163\133\229\164\135\231\187\132")
+
+local switchRelicEvent = RepEventFolder:WaitForChild("\233\129\151\231\137\169")
+	:WaitForChild("\229\136\135\230\141\162\232\163\133\229\164\135\231\187\132")
+
+local switchRuneEvent = RepEventFolder:WaitForChild("\233\152\181\230\179\149")
+	:WaitForChild("\229\136\135\230\141\162\232\163\133\229\164\135\231\187\132")
+
+local switchDecorEvent = RepEventFolder:WaitForChild("\228\184\150\231\149\140\230\160\145")
+	:WaitForChild("\229\136\135\230\141\162\232\163\133\229\164\135\231\187\132")
+
+local switchStatueEvent = RepEventFolder:WaitForChild("\229\137\145\233\155\149\229\131\143")
+	:WaitForChild("\229\136\135\230\141\162\231\187\132")
+
+local EquipSkillRemote = RepEventFolder:WaitForChild("\230\138\128\232\131\189")
+	:WaitForChild("\232\163\133\229\164\135\230\138\128\232\131\189")
+
+--// CLEAN UI
+if playerGui:FindFirstChild("PresetEditor") then
+	playerGui.PresetEditor:Destroy()
+end
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "PresetEditor"
+gui.Parent = playerGui
+
+--// WINDOW
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 175, 0, 280)
+frame.Position = UDim2.new(0.1, 0, 0.3, 0)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BorderSizePixel = 0
+frame.ZIndex = 10
+frame.Parent = gui
+
+--// CLOSE BUTTON (✔ ADDED HERE)
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 25, 0, 25)
+closeBtn.Position = UDim2.new(1, -30, 0, 5)
+closeBtn.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.new(1, 1, 1)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 14
+closeBtn.BorderSizePixel = 0
+closeBtn.ZIndex = 50
+closeBtn.Parent = frame
+
+closeBtn.MouseButton1Click:Connect(function()
+	gui:Destroy()
+end)
+
+--// DRAG SYSTEM
+local dragging, dragStart, startPos, dragInput
+
+frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = frame.Position
+	end
+end)
+
+frame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and input == dragInput then
+		local delta = input.Position - dragStart
+		frame.Position = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = false
+	end
+end)
+
+--// PRESETS DATA
+local presets = {
+	[1] = {
+		eq = 1, relic = 1, rune = 1, decor = 1, statue = 4,
+		skills = {"9","10","11"}
+	},
+	[2] = {
+		eq = 1, relic = 4, rune = 4, decor = 5, statue = 2,
+		skills = {"9","10","11"}
+	}
+}
+
+local selected = 1
+
+--// DROPDOWN
+local dropdown = Instance.new("TextButton")
+dropdown.Size = UDim2.new(0, 150, 0, 30)
+dropdown.Position = UDim2.new(0, 5, 0, 5)
+dropdown.Text = "Preset 1 ▼"
+dropdown.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+dropdown.TextColor3 = Color3.new(1,1,1)
+dropdown.ZIndex = 20
+dropdown.Parent = frame
+
+local list = Instance.new("Frame")
+list.Size = UDim2.new(1, -10, 0, 70)
+list.Position = UDim2.new(0, 5, 0, 40)
+list.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+list.Visible = false
+list.ZIndex = 20
+list.Parent = frame
+
+local layout = Instance.new("UIListLayout")
+layout.Padding = UDim.new(0, 4)
+layout.Parent = list
+
+for i = 1, 2 do
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0, 150, 0, 32)
+	btn.Position = UDim2.new(0, 3, 0, (i - 1) * 34)
+	btn.Text = "Preset " .. i
+
+	btn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.BorderSizePixel = 0
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 14
+
+	btn.ZIndex = 25
+	btn.Parent = list
+
+	btn.MouseButton1Click:Connect(function()
+		selected = i
+		dropdown.Text = "Preset " .. i .. " ▼"
+		list.Visible = false
+		updateFields()
+	end)
+end
+
+dropdown.MouseButton1Click:Connect(function()
+	list.Visible = not list.Visible
+end)
+
+--// LABEL HELPER
+local function makeLabel(text, y)
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, -10, 0, 14)
+	label.Position = UDim2.new(0, 5, 0, y)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = Color3.fromRGB(200, 200, 200)
+	label.Font = Enum.Font.GothamBold
+	label.TextSize = 11
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.ZIndex = 30
+	label.Parent = frame
+	return label
+end
+
+--// INPUTS + LABELS
+makeLabel("Equip", 50)
+local eqBox = Instance.new("TextBox")
+eqBox.Size = UDim2.new(0, 150, 0, 22)
+eqBox.Position = UDim2.new(0, 5, 0, 50)
+eqBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+eqBox.TextColor3 = Color3.new(1,1,1)
+eqBox.ClearTextOnFocus = false
+eqBox.ZIndex = 20
+eqBox.Parent = frame
+
+makeLabel("Relic", 80)
+local relicBox = Instance.new("TextBox")
+relicBox.Size = UDim2.new(0, 150, 0, 22)
+relicBox.Position = UDim2.new(0, 5, 0, 80)
+relicBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+relicBox.TextColor3 = Color3.new(1,1,1)
+relicBox.ClearTextOnFocus = false
+relicBox.ZIndex = 20
+relicBox.Parent = frame
+
+makeLabel("Rune", 110)
+local runeBox = Instance.new("TextBox")
+runeBox.Size = UDim2.new(0, 150, 0, 22)
+runeBox.Position = UDim2.new(0, 5, 0, 110)
+runeBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+runeBox.TextColor3 = Color3.new(1,1,1)
+runeBox.ClearTextOnFocus = false
+runeBox.ZIndex = 20
+runeBox.Parent = frame
+
+makeLabel("Decor", 140)
+local decorBox = Instance.new("TextBox")
+decorBox.Size = UDim2.new(0, 150, 0, 22)
+decorBox.Position = UDim2.new(0, 5, 0, 140)
+decorBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+decorBox.TextColor3 = Color3.new(1,1,1)
+decorBox.ClearTextOnFocus = false
+decorBox.ZIndex = 20
+decorBox.Parent = frame
+
+makeLabel("Statue", 170)
+local statueBox = Instance.new("TextBox")
+statueBox.Size = UDim2.new(0, 150, 0, 22)
+statueBox.Position = UDim2.new(0, 5, 0, 170)
+statueBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+statueBox.TextColor3 = Color3.new(1,1,1)
+statueBox.ClearTextOnFocus = false
+statueBox.ZIndex = 20
+statueBox.Parent = frame
+
+makeLabel("3 Skills", 200)
+local skillBox = Instance.new("TextBox")
+skillBox.Size = UDim2.new(0, 150, 0, 22)
+skillBox.Position = UDim2.new(0, 5, 0, 200)
+skillBox.BackgroundColor3 = Color3.fromRGB(40,40,40)
+skillBox.TextColor3 = Color3.new(1,1,1)
+skillBox.ClearTextOnFocus = false
+skillBox.ZIndex = 20
+skillBox.Parent = frame
+
+--// LOAD UI
+function updateFields()
+	local p = presets[selected]
+
+	eqBox.Text = p.eq
+	relicBox.Text = p.relic
+	runeBox.Text = p.rune
+	decorBox.Text = p.decor
+	statueBox.Text = p.statue
+	skillBox.Text = table.concat(p.skills, ",")
+end
+
+updateFields()
+
+--// APPLY FUNCTION
+local function applyCurrentPreset()
+	local p = presets[selected]
+
+	local skills = {}
+	for v in string.gmatch(skillBox.Text, "%d+") do
+		table.insert(skills, v)
+	end
+
+	switchEqEvent:FireServer(tonumber(eqBox.Text) or 1, 1)
+	switchRelicEvent:FireServer(tonumber(relicBox.Text) or 1, 1)
+	switchRuneEvent:FireServer(tonumber(runeBox.Text) or 1, 1)
+	switchDecorEvent:FireServer(tonumber(decorBox.Text) or 1, 1)
+	switchStatueEvent:FireServer(tonumber(statueBox.Text) or 1, 1)
+
+	for i, s in ipairs(skills) do
+		EquipSkillRemote:FireServer(s, i)
+	end
+end
+
+--// APPLY BUTTON
+local applyBtn = Instance.new("TextButton")
+applyBtn.Size = UDim2.new(0, 150, 0, 35)
+applyBtn.Position = UDim2.new(0, 5, 0, 230)
+applyBtn.Text = "Apply Preset"
+applyBtn.BackgroundColor3 = Color3.fromRGB(0,170,0)
+applyBtn.TextColor3 = Color3.new(1,1,1)
+applyBtn.ZIndex = 20
+applyBtn.Parent = frame
+
+applyBtn.MouseButton1Click:Connect(applyCurrentPreset)
+
+--// HOTKEYS (Q REMOVED)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+
+	if input.KeyCode == Enum.KeyCode.One then
+		selected = 1
+		dropdown.Text = "Preset 1 ▼"
+		updateFields()
+
+	elseif input.KeyCode == Enum.KeyCode.Two then
+		selected = 2
+		dropdown.Text = "Preset 2 ▼"
+		updateFields()
+	end
+end)
