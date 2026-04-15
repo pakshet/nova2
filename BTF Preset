@@ -39,14 +39,14 @@ gui.Parent = playerGui
 
 --// WINDOW
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 175, 0, 280)
+frame.Size = UDim2.new(0, 200, 0, 280)
 frame.Position = UDim2.new(0.1, 0, 0.3, 0)
 frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 frame.BorderSizePixel = 0
 frame.ZIndex = 10
 frame.Parent = gui
 
---// CLOSE BUTTON (✔ ADDED HERE)
+--// CLOSE BUTTON
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 25, 0, 25)
 closeBtn.Position = UDim2.new(1, -30, 0, 5)
@@ -63,19 +63,28 @@ closeBtn.MouseButton1Click:Connect(function()
 	gui:Destroy()
 end)
 
---// DRAG SYSTEM
-local dragging, dragStart, startPos, dragInput
+--// DRAG SYSTEM (Mobile + PC Support)
+local dragging = false
+local dragStart
+local startPos
+local dragInput
 
 frame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		dragging = true
 		dragStart = input.Position
 		startPos = frame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
 	end
 end)
 
 frame.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement then
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
 		dragInput = input
 	end
 end)
@@ -89,12 +98,6 @@ UserInputService.InputChanged:Connect(function(input)
 			startPos.Y.Scale,
 			startPos.Y.Offset + delta.Y
 		)
-	end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = false
 	end
 end)
 
@@ -284,7 +287,7 @@ applyBtn.Parent = frame
 
 applyBtn.MouseButton1Click:Connect(applyCurrentPreset)
 
---// HOTKEYS (Q REMOVED)
+--// HOTKEYS
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
 
