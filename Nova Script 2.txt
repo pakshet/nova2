@@ -169,10 +169,10 @@ gui.IgnoreGuiInset = true
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = playerGui
 
-local function createButton(text, yPos, xPos)
+local function createButton(text, xPos)
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(0, 90, 0, 35)
-	btn.Position = UDim2.new(0, xPos, 0, yPos)
+	btn.Position = UDim2.new(0, xPos, 0, 475)
 	btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 	btn.TextColor3 = Color3.new(1, 1, 1)
 	btn.Font = Enum.Font.GothamBold
@@ -186,8 +186,8 @@ local function createButton(text, yPos, xPos)
 	return btn
 end
 
-local skillBtn = createButton("Skill Loop : OFF", 120, 157)
-local tpBtn = createButton("Auto TP (Smart) : OFF", 180, 255)
+local skillBtn = createButton("Skill Loop : OFF", 157)
+local tpBtn = createButton("Auto TP (Smart) : OFF", 255)
 
 skillBtn.MouseButton1Click:Connect(function()
 	skillLoopEnabled = not skillLoopEnabled
