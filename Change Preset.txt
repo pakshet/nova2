@@ -13,9 +13,9 @@ local RepEventFolder = ReplicatedStorage
 
 ---
 
---- local switchEqEvent = RepEventFolder
-	---:WaitForChild("\232\163\133\229\164\135")
-	---:WaitForChild("\229\136\135\230\141\162\232\163\133\229\164\135\231\187\132")
+local switchEqEvent = RepEventFolder
+	:WaitForChild("\232\163\133\229\164\135")
+	:WaitForChild("\229\136\135\230\141\162\232\163\133\229\164\135\231\187\132")
 	
 local switchRelicEvent = RepEventFolder
 	:WaitForChild("\233\129\151\231\137\169")
@@ -79,16 +79,17 @@ expBtn.MouseButton1Click:Connect(function()
 	if not busy and not expSet then 
 		busy = true
 		expBtn.Text = "Switching..."
-		--- switchEqEvent:FireServer("1",1)
-		switchRelicEvent:FireServer("1",1)
+		switchEqEvent:FireServer(1,1)
 		task.wait(0.3)
-		switchRuneEvent:FireServer("1",1)
+		switchRelicEvent:FireServer(1,1)
 		task.wait(0.3)
-		switchDecorEvent:FireServer("1",1)
+		switchRuneEvent:FireServer(1,1)
 		task.wait(0.3)
-		switchStatueEvent:FireServer("4",1)
+		switchDecorEvent:FireServer(1,1)
 		task.wait(0.3)
-		switchPetEvent:FireServer("252aa770-fa9e-428b-a1d8-f2b634e487e1",1) --- EXP Pet
+		switchStatueEvent:FireServer(4,1)
+		task.wait(0.3)
+		switchPetEvent:FireServer("252aa770-fa9e-428b-a1d8-f2b634e487e1",1)
 		expSet = true
 		expBtn.Text = "Exp Set - " .. (expSet and "ON" or "OFF")
 		dtbBtn.Text = "DTB Set - " .. (not expSet and "ON" or "OFF")
@@ -101,16 +102,17 @@ dtbBtn.MouseButton1Click:Connect(function()
 	if not busy and expSet then 
 		busy = true
 		dtbBtn.Text = "Switching..."
-		--- switchEqEvent:FireServer("1",1)
-		switchRelicEvent:FireServer("4",1)
+		switchEqEvent:FireServer(1,1)
 		task.wait(0.3)
-		switchRuneEvent:FireServer("4",1)
+		switchRelicEvent:FireServer(4,1)
 		task.wait(0.3)
-		switchDecorEvent:FireServer("5",1)
+		switchRuneEvent:FireServer(4,1)
 		task.wait(0.3)
-		switchStatueEvent:FireServer("2",1)
+		switchDecorEvent:FireServer(5,1)
 		task.wait(0.3)
-		switchPetEvent:FireServer("6cf49d48-b5a2-47be-9b73-8d9804f0e4d8",1) --- DTB Pet
+		switchStatueEvent:FireServer(2,1)
+		task.wait(0.3)
+		switchPetEvent:FireServer("6cf49d48-b5a2-47be-9b73-8d9804f0e4d8",1)
 		expSet = false
 		dtbBtn.Text = "DTB Set - " .. (expSet and "ON" or "OFF")
 		expBtn.Text = "Exp Set - " .. (not expSet and "ON" or "OFF")
